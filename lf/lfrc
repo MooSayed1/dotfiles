@@ -1,0 +1,148 @@
+
+# Basic vars
+set shellopts '-eu'
+set ifs "\n"
+set scrolloff 10
+set icons
+set period 1
+set hiddenfiles ".*:*.aux:*.log:*.bbl:*.bcf:*.blg:*.run.xml"
+set cleaner '~/.config/lf/cleaner'
+set previewer '~/.config/lf/scope'
+set autoquit true
+# cmds/functions
+cmd on-cd %{{
+	# Sort files by time in certain folders.
+	for d in Downloads Screenshots ongoing; do
+		if [[ $(basename -- "$PWD") == "$d" ]]; then
+			lf -remote "send $id set sortby time"
+		fi
+	done
+}}
+cmd open ${{
+    case $(file --mime-type "$(readlink -f $f)" -b) in
+	image/vnd.djvu|application/pdf|application/octet-stream|application/postscript) setsid -f zathura $fx >/dev/null 2>&1 ;;
+        text/*|application/json|inode/x-empty|application/x-subrip) $EDITOR $fx;;
+	image/x-xcf) setsid -f gimp $f >/dev/null 2>&1 ;;
+	image/svg+xml) display -- $f ;;
+	image/*) rotdir $f | grep -i "\.\(png\|jpg\|ppm\|jpeg\|gif\|webp\|avif\|tif\|ico\)\(_large\)*$" |
+		setsid -f nsxiv -aio 2>/dev/null | while read -r file; do
+			[ -z "$file" ] && continue
+			lf -remote "send select \"$file\""
+			lf -remote "send toggle"
+		done &
+		;;
+	audio/*|video/x-ms-asf) mpv --audio-display=no $f ;;
+	video/*) setsid -f mpv $f -quiet >/dev/null 2>&1 ;;
+	text/html)  firefox $fx  >/dev/null 2>&1 &;;
+  
+	application/pdf|application/vnd.djvu|application/epub*) setsid -f zathura $fx >/dev/null 2>&1 ;;
+	application/pgp-encrypted) $EDITOR $fx ;;
+        *) for f in $fx; do setsid -f $OPENER $f >/dev/null 2>&1; done;;
+    esac
+}}
+
+
+cmd share $curl -F"file=@$fx" https://0x0.st | wl-copy
+
+cmd mkdir $mkdir -p "$(echo $* | tr ' ' '\ ')"
+cmd create $touch "$(echo $* | tr ' ' '\ ')"
+
+cmd extract ${{
+	clear; tput cup $(($(tput lines)/3)); tput bold
+	set -f
+	printf "%s\n\t" "$fx"
+	printf "extract?[y/N]"
+	read ans
+	[ $ans = "y" ] && 7z x $fx
+}}
+
+cmd compress ${{
+	clear; tput cup $(($(tput lines)/3)); tput bold
+	set -f
+	printf "%s\n\t" "$fx"
+	printf "zip?[y/N]"
+	read ans
+	[ $ans = "y" ] && zip -r $fx $fx
+}}
+
+cmd delete ${{
+	clear; tput cup $(($(tput lines)/3)); tput bold
+	set -f
+	printf "%s\n\t" "$fx"
+	printf "remove?[y/N]"
+	read ans
+	[ $ans = "y" ] && rm -rf $fx
+}}
+
+cmd dragon ${{
+	dragon $fx
+}}
+
+
+cmd moveto ${{
+	clear; tput cup $(($(tput lines)/3)); tput bold
+	set -f
+	clear; echo "Move to where?"
+	dest="$(sed -e 's/\s*#.*//' -e '/^$/d' -e 's/^\S*\s*//' ${XDG_CONFIG_HOME:-$HOME/.config}/shell/bm-dirs | fzf | sed 's|~|$HOME|')" &&
+	for x in $fx; do
+		eval mv -iv \"$x\" \"$dest\"
+	done &&
+	notify-send "🚚 File(s) moved." "File(s) moved to $dest."
+}}
+
+cmd copyto ${{
+	clear; tput cup $(($(tput lines)/3)); tput bold
+	set -f
+	clear; echo "Copy to where?"
+	dest="$(sed -e 's/\s*#.*//' -e '/^$/d' -e 's/^\S*\s*//' ${XDG_CONFIG_HOME:-$HOME/.config}/shell/bm-dirs | fzf | sed 's|~|$HOME|')" &&
+	for x in $fx; do
+		eval cp -ivr \"$x\" \"$dest\"
+	done &&
+	notify-send "📋 File(s) copied." "File(s) copies to $dest."
+}}
+
+cmd setbg "$1"
+cmd bulkrename $vimv
+
+# Bindings
+map S share
+map <c-f> $lf -remote "send $id select \"$(fzf)\""
+map <c-j> $lf -remote "send $id cd $(sed -e 's/\s*#.*//' -e '/^$/d' -e 's/^\S*\s*//' ${XDG_CONFIG_HOME:-$HOME/.config}/shell/bm-dirs | fzf)"
+map J :updir; down; open
+map K :updir; up; open
+#map g top
+map D delete
+map <c-d> dragon
+map E extract
+map <c-z> compress
+# map C copyto
+# map M moveto
+map <c-n> push :mkdir<space>
+map <c-c> push :create<space>
+map <c-r> reload
+map <c-s> set hidden!
+map <enter> shell
+map x $$f
+map X !$f
+map o &mimeopen "$f"
+map O $mimeopen --ask "$f"
+
+map A rename # at the very end
+map c push A<c-u> # new rename
+map I push A<c-a> # at the very beginning
+map i push A<a-b><a-b><a-f> # before extension
+map a push A<a-b> # after extension
+map B bulkrename
+map b $setbg $f
+
+map <c-e> down
+map <c-y> up
+map V push :!sudo<space>nvim<space>"$f"
+
+map W $setsid -f $TERMINAL >/dev/null 2>&1
+
+map Y $printf "%s" "$fx" | wl-copy
+
+&[ $LF_LEVEL -eq 1 ] || lf -remote "send $id echoerr \"Warning: You're in a nested lf( $LF_LEVEL) instance!\""
+
+source "~/.config/lf/shortcutrc"

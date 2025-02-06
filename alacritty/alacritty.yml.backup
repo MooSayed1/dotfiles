@@ -1,0 +1,151 @@
+# Alacritty Configuration File
+
+# Window Configuration
+window:
+  # Window dimensions (columns, rows)
+  dimensions:
+    columns: 120
+    rows: 35
+
+  # Window padding (space between text and window borders)
+  padding:
+    x: 10
+    y: 10
+
+  # Startup mode (default: Windowed)
+  startup_mode: Maximized
+
+  # Decorations (title bar, borders)
+  decorations: full
+
+  # Background opacity (0.0 transparent, 1.0 opaque)
+  opacity: 0.95
+
+# Scrolling Configuration
+scrolling:
+  # Maximum number of lines in the scrollback buffer
+  history: 10000
+
+  # Scrolling speed multiplier
+  multiplier: 3
+
+# Font Configuration
+font:
+  # Normal font
+  normal:
+    family: "Fira Code"
+    style: Regular
+
+  # Bold font
+  bold:
+    family: "Fira Code"
+    style: Bold
+
+  # Italic font
+  italic:
+    family: "Fira Code"
+    style: Italic
+
+  # Font size
+  size: 12.0
+
+  # Offset for glyphs (x, y)
+  offset:
+    x: 0
+    y: 0
+
+  # Glyph offset adjustment
+  glyph_offset:
+    x: 0
+    y: 0
+
+# Colors Configuration (Gruvbox Dark theme)
+colors:
+  # Default colors
+  primary:
+    background: '#282828'
+    foreground: '#ebdbb2'
+
+  # Normal colors
+  normal:
+    black:   '#282828'
+    red:     '#cc241d'
+    green:   '#98971a'
+    yellow:  '#d79921'
+    blue:    '#458588'
+    magenta: '#b16286'
+    cyan:    '#689d6a'
+    white:   '#a89984'
+
+  # Bright colors
+  bright:
+    black:   '#928374'
+    red:     '#fb4934'
+    green:   '#b8bb26'
+    yellow:  '#fabd2f'
+    blue:    '#83a598'
+    magenta: '#d3869b'
+    cyan:    '#8ec07c'
+    white:   '#ebdbb2'
+
+# Cursor Configuration
+cursor:
+  # Cursor style (Block, Underline, Beam)
+  style: Block
+
+  # Blinking cursor
+  blinking: On
+
+  # Cursor color
+  color: '#ebdbb2'
+
+# Selection Configuration
+selection:
+  # Selected text color
+  semantic_escape: '\x1b[1m'
+
+  # Background color of selected text
+  background: '#ebdbb2'
+
+  # Foreground color of selected text
+  foreground: '#282828'
+
+# Mouse Configuration
+mouse:
+  # Hide mouse while typing
+  hide_when_typing: true
+
+# Keyboard Configuration
+key_bindings:
+  - { key: V, mods: Control|Shift, action: Paste }
+  - { key: C, mods: Control|Shift, action: Copy }
+  - { key: Q, mods: Control|Shift, action: Quit }
+  - { key: T, mods: Control|Shift, action: SpawnNewInstance }
+
+# Shell Configuration
+shell:
+  program: /bin/zsh
+  args:
+    - --login
+
+# Live Configuration Reload
+live_config_reload: true
+
+# Performance Tuning
+performance:
+  # Use GPU rendering
+  gpu: true
+
+  # Renderer backend (OpenGL, Vulkan)
+  renderer: OpenGL
+
+# Debug Configuration
+debug:
+  # Log level (Off, Error, Warn, Info, Debug, Trace)
+  log_level: Warn
+
+  # Print escape sequences
+  print_events: false
+
+  # Persistent logging
+  persistent_logging: false
