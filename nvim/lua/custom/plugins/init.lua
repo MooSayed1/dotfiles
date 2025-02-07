@@ -19,7 +19,10 @@ return {
       require('competitest').setup {
         compile_command = {
           c = { exec = 'gcc', args = { '-DMOHAMED', '-Wall', '$(FNAME)', '-o', '$(FNOEXT)' } },
-          cpp = { exec = 'g++', args = { '-std=c++20', '-DMOHAMED', '-Wall', '$(FNAME)', '-o', '$(FNOEXT)', '-g' } },
+          cpp = {
+            exec = 'g++',
+            args = { '-std=c++20', '-DMOHAMED', '-Wall', '$(FNAME)', '-o', '$(FNOEXT)', '-g' },
+          },
           py = { exec = 'python', args = { '$(FNAME)' } },
           rust = { exec = 'rustc', args = { '$(FNAME)' } },
           java = { exec = 'javac', args = { '$(FNAME)' } },
