@@ -162,6 +162,7 @@ vim.opt.scrolloff = 10
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
+vim.keymap.set('n', '<C-c>', '<cmd>%y+<CR>')
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
@@ -188,6 +189,8 @@ vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left wind
 vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+
+vim.keymap.set('v', '<leader>p', '"0P', { noremap = true, silent = true, desc = 'Paste Without Delete From Buffer' }) -- Paste
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -410,17 +413,17 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
-      vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
+      vim.keymap.set('n', '<leader>fo', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
 
       -- Slightly advanced example of overriding default behavior and theme
-      vim.keymap.set('n', '<leader>/', function()
-        -- You can pass additional configuration to Telescope to change the theme, layout, etc.
-        builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
-          winblend = 10,
-          previewer = false,
-        })
-      end, { desc = '[/] Fuzzily search in current buffer' })
+      -- vim.keymap.set('n', '<leader>/', function()
+      --   -- You can pass additional configuration to Telescope to change the theme, layout, etc.
+      --   builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
+      --     winblend = 10,
+      --     previewer = false,
+      --   })
+      -- end, { desc = '[/] Fuzzily search in current buffer' })
 
       -- It's also possible to pass additional configuration options.
       --  See `:help telescope.builtin.live_grep()` for information about particular keys
@@ -1039,6 +1042,24 @@ require('lazy').setup({
     config = true,
     -- use opts = {} for passing setup options
     -- this is equivalent to setup({}) function
+  },
+  {
+    'ThePrimeagen/vim-be-good',
+  },
+  -- add this to your lua/plugins.lua, lua/plugins/init.lua,  or the file you keep your other plugins:
+  {
+    'numToStr/Comment.nvim',
+    opts = {
+      mappings = {
+        basic = false, -- Disable default keybindings
+        extra = false,
+      },
+    },
+    config = function()
+      require('Comment').setup()
+      vim.keymap.set('n', '<leader>/', '<Plug>(comment_toggle_linewise_current)', { silent = true, desc = 'Toggle Comment' })
+      vim.keymap.set('v', '<leader>/', '<Plug>(comment_toggle_linewise_visual)', { silent = true, desc = 'Toggle Comment in Visual Mode' })
+    end,
   },
   -- END OF MY PLUGINS
 }, {
