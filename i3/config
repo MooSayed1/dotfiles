@@ -92,9 +92,8 @@ bindsym $mod+Shift+q kill
 
 # start dmenu (a program launcher)
 # bindsym $mod+d exec --no-startup-id dmenu_run
-#bindsym $mod+d exec --no-startup-id ~/.config/rofi/launchers/type-6/launcher.sh
+# bindsym $mod+d exec --no-startup-id ~/.config/rofi/launchers/type-6/launcher.sh
 bindsym $mod+d exec --no-startup-id ~/.config/rofi/launchers/type-3/launcher.sh
-#bindsym $mod+d exec --no-startup-id pkill rofi || rofi -show drun -replace -i
 
 # A more modern dmenu replacement is rofi:
 # bindcode $mod+40 exec "rofi -modi drun,run -show drun"

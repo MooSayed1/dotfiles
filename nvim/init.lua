@@ -619,7 +619,7 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        -- clangd = {},
+        clangd = {},
         -- gopls = {},
         -- pyright = {},
         -- rust_analyzer = {},
@@ -833,7 +833,7 @@ require('lazy').setup({
             -- set group index to 0 to skip loading LuaLS completions as lazydev recommends it
             group_index = 0,
           },
-          { name = 'nvim_lsp' },
+          -- { name = 'nvim_lsp' },
           { name = 'luasnip' },
           { name = 'path' },
         },
@@ -1059,6 +1059,26 @@ require('lazy').setup({
       require('Comment').setup()
       vim.keymap.set('n', '<leader>/', '<Plug>(comment_toggle_linewise_current)', { silent = true, desc = 'Toggle Comment' })
       vim.keymap.set('v', '<leader>/', '<Plug>(comment_toggle_linewise_visual)', { silent = true, desc = 'Toggle Comment in Visual Mode' })
+    end,
+  },
+  {
+    'L3MON4D3/LuaSnip',
+    version = 'v2.*',
+    build = 'make install_jsregexp',
+    config = function()
+      local ls = require 'luasnip'
+
+      -- Setup LuaSnip
+      ls.setup {}
+
+      -- Lazy load Lua-based snippets
+      require('luasnip.loaders.from_lua').lazy_load { paths = '~/.config/nvim/lua/snippets' }
+
+      -- Lazy load SnipMate-style snippets
+      require('luasnip.loaders.from_snipmate').lazy_load { paths = { '~/.config/nvim/lua/snippets' } }
+
+      -- Optional: Lazy load VSCode-style snippets (if you use them)
+      require('luasnip.loaders.from_vscode').lazy_load()
     end,
   },
   -- END OF MY PLUGINS

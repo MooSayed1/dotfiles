@@ -1,0 +1,833 @@
+snippet arr
+    int n;
+    cin >> n;
+    vector<int> v(n);
+    for (int i = 0; i < n; i++) {
+        cin >> v[i];
+    }
+
+snippet v
+    vector<int> ${1:v}(${2:n});
+
+snippet pb
+    push_back
+
+snippet map
+    map<${1:int},${2:int}> ${3:m};
+
+snippet pair
+    pair<${1:int},${2:int}> ${3:p};
+
+snippet queue
+    queue<${1:int}> ${2:q};
+
+snippet deque
+    deque<${1:int}> ${2:q};
+
+snippet set
+    set<${1:int}> ${2:s};
+
+snippet fori
+	for (int ${2:i} = 0; $2 < ${1:n}; $2${3:++}) {
+	}
+
+snippet fore
+	for (${1:auto} ${2:i} : ${3:container}) {
+          cout<<i << " ";
+	}
+
+snippet form
+	for (${1:auto} &[${2:a},${3:b}] : ${4:container}) {
+	}
+
+snippet cin
+    int ${1:x};
+    cin >> $1;
+
+snippet cout
+    cout << ${1:x} << "\n";
+
+snippet yes
+    cout << "YES\n";
+
+snippet no
+    cout << "NO\n";
+
+# useful algos
+# Prime factorization in O(sqrt(n))
+snippet code_primefacts
+    map<int, int> primefacts(int n) {
+      map<int,int> primes;
+      for (int i = 2; i * i <= n; i++) {
+        while (n % i == 0) {
+          primes[i]++;
+          n /= i;
+        }
+      }
+      if (n != 1) {
+        primes[n]++;
+      }
+      return primes;
+    }
+
+# Prime factorization query in O(log(n))
+snippet code_primefacts_log
+    map<int, int> primefacts_log(int x) {
+      map<int, int> primes;
+      while (x != 1) {
+        primes[spf[x]]++;
+        x = x / spf[x];
+      }
+    }
+
+# get divisors from prime facts
+snippet code_getdivs_primefacts
+    vector<int> getDivisors(map<int, int>& primeFactors) {
+      vector<int> divisors;
+      divisors.push_back(1);
+      for (auto& [prime, power] : primeFactors) {
+        for (int i = 0; i < divisors.size(); i++) {
+          long long curr = divisors[i];
+          for (int j = 1; j <= power; j++) {
+            curr *= prime;
+            divisors.push_back(curr);
+          }
+        }
+      }
+      return divisors;
+    }
+
+# get divisors dierctly O(sqrt(n))
+snippet code_getdivs
+    vector<int> getDivisors(int n) {
+      vector<int> divisors;
+      for (int i = 1; i * i <= n; i++) {
+        if (n % i == 0) {
+          divisors.push_back(i);
+          if (i * i != n) {
+            divisors.push_back(n / i);
+          }
+        }
+      }
+      return divisors;
+    }
+# check if prime 
+snippet code_isprime
+    bool isPrime(int n) {
+        if(n < 2) return false;
+        if(n == 2) return true;
+        if(n % 2 == 0) return false;
+        
+        for(int i = 3; i * i <= n; i += 2) {
+            if(n % i == 0) return false;
+        }
+        return true;
+    }
+# Sieve's algorithm to mark numbers as primes and composites
+snippet code_sieve
+    void sieve(vector<bool> &is_prime) {
+        is_prime[1] = false;
+        is_prime[0] = false;
+        int s = is_prime.size();
+        for (int i = 4; i < s; i += 2)
+            is_prime[i] = false;
+        for (int i = 3; i * i < s; i += 2) {
+            if (is_prime[i]) {
+                for (int j = i * i; j < s; j += i + i)
+                    is_prime[j] = false;
+            }
+        }
+    }
+
+snippet code_sieve_fast
+    const int NMAX = 1000000;
+    bitset<NMAX / 2> bits;
+
+    void precalcseive() {
+      bits.set();
+      for (int i = 3; i / 2 < bits.size(); i = 2 * bits._Find_next(i / 2) + 1) {
+        for (auto j = (int64_t)i * i / 2; j < bits.size(); j += i)
+          bits[j] = 0;
+      }
+    }
+
+# Fast Sieve's algorithm to calc minimum prime
+snippet code_sieve_spf
+    vector<int> spf, primes;
+    void sieve(int n) {
+        spf.assign(n + 1, 0);
+        primes.clear();
+
+        for (int i = 2; i <= n; i++) {
+            if (spf[i] == 0) {
+                spf[i] = i;
+                primes.push_back(i);
+            }
+
+            for (auto p : primes) {
+                if (i * p > n) {
+                    break;
+                }
+                spf[i * p] = p;
+                if (p == spf[i]) {
+                    break;
+                }
+            }
+        }
+    }
+
+# Sieve's algorithm to calc all divisors
+snippet code_sieve_divs
+    void divs(int n = 1e6) {
+        vector<vector<int>> divs(n);
+
+        for (int i = 1; i < n; i++) {
+            for (int j = i; j < n; j += i) {
+                divs[j].push_back(i);
+            }
+        }
+    }
+
+
+snippet code_fast_pow
+    int fast_power(int a, int b, int mod) {
+        int res = 1;
+        while (b) {
+            if (b & 1) res = res * a % mod;
+            a = a * a % mod;
+            b >>= 1;
+        }
+        return res;
+    }
+
+# modular arithmetics stolen from Jiangly
+snippet code_mint
+    template<int32_t mod>
+    struct mint {
+        using Z = mint;
+        int32_t x;
+        mint(int32_t x = 0) : x(norm(x)) {}
+        mint(ll x) : x(norm(x % mod)) {}
+        inline int32_t norm(int32_t x) const {
+            return x >= mod ? x - mod : (x < 0  ? x + mod : x);
+        }
+        Z power(ll b) const {
+            Z res = 1, a = x;
+            for (; b; b >>= 1, a *= a)
+                if (b & 1) res *= a;
+            return res;
+        }
+        Z inv() const { return assert(x != 0), power(mod - 2); }
+        Z operator-() const { return -x; }
+        Z &operator*=(const Z &r) { return *this = (ll) x * r.x; }
+        Z &operator+=(const Z &r) { return *this = x + r.x; }
+        Z &operator-=(const Z &r) { return *this = x - r.x; }
+        Z &operator/=(const Z &r) { return *this *= r.inv(); }
+        friend Z operator*(const Z &l, const Z &r) { return Z(l) *= r; }
+        friend Z operator+(const Z &l, const Z &r) { return Z(l) += r; }
+        friend Z operator-(const Z &l, const Z &r) { return Z(l) -= r; }
+        friend Z operator/(const Z &l, const Z &r) { return Z(l) /= r; }
+        friend ostream &operator<<(ostream &os, const Z &a) { return os << a.x; }
+        friend istream &operator>>(istream &is, Z &a) {
+            ll y = 0;
+            return is >> y, a = y, is;
+        }
+    };
+
+    // constexpr int MOD = 998244353;
+    constexpr int MOD = 1000000007;
+    using Z = mint<MOD>;
+
+# modular combinations
+snippet code_ncr
+    vector<Z> fact = {1};
+    vector<Z> fact_inv = {1};
+
+    void build_fact(int n = 1e6) {
+        while ((int) fact.size() < n + 1)
+            fact.push_back(fact.back() * (int) fact.size());
+        fact_inv.resize(fact.size());
+        fact_inv.back() = fact.back().inv();
+        for (int j = fact_inv.size() - 2; fact_inv[j].x == 0; j--)
+            fact_inv[j] = fact_inv[j + 1] * (j + 1);
+    }
+
+    Z ncr(int n, int r) {
+        if (r > n || r < 0) return 0;
+        if ((int) fact.size() < n + 1) build_fact(n);
+        return fact[n] * fact_inv[r] * fact_inv[n - r];
+    }
+
+
+snippet code_dfs
+  function<void(int)> dfs = [&](int p) {
+    vis[p] = 1;
+    for (auto v : adj[p]) {
+      if (!vis[v]) dfs(v);
+    }
+  };
+
+
+snippet code_bfs
+  queue<int> q;
+  vector<int> d(n + 1, inf), par(n + 1, -1);
+  q.push(1);
+  d[1] = 0;
+  while (!q.empty()) {
+    int u = q.front();
+    q.pop();
+    for (auto v: g[u]) {
+      if (d[u] + 1 < d[v]) {
+        d[v] = d[u] + 1;
+        par[v] = u;
+        q.push(v);
+      }
+    }
+  }
+snippet code_bfs_grid
+  queue<pair<int, int>> q;
+  vector<vector<int>> d(m + 1, vector<int>(n + 1, inf));
+  vector<vector<bool>> visited(m + 1, vector<bool>(n + 1, false));
+  q.push({startX, startY});
+  d[startX][startY] = 0;
+  visited[startX][startY] = true;
+
+  int dx[] = {-1, 0, 1, 0}; // Movement in four directions (up, right, down, left)
+  int dy[] = {0, 1, 0, -1};
+
+  while (!q.empty()) {
+    auto [x, y] = q.front();
+    q.pop();
+    for (int i = 0; i < 4; ++i) {
+      int newX = x + dx[i];
+      int newY = y + dy[i];
+      if (newX >= 1 && newX <= m && newY >= 1 && newY <= n && !visited[newX][newY]) {
+        visited[newX][newY] = true;
+        d[newX][newY] = d[x][y] + 1;
+        q.push({newX, newY});
+      }
+    }
+  }
+# random utils
+snippet code_rand
+    mt19937 rng = mt19937(random_device()());
+
+    void seed(int s) { rng = mt19937(s); }
+
+    int rand_int(int x, int y) {
+        return uniform_int_distribution<int>(x, y)(rng);
+    }
+
+# generator utils for the stress tester
+snippet code_stress_gen
+    struct Gen {
+        static vector<int> perm(int n) {
+            vector<int> a(n);
+            for (int i = 0; i < n; i++)
+                a[i] = i;
+            random_shuffle(a.begin(), a.end());
+            return a;
+        }
+
+        static vector<int> tree_parents(int n) {
+            vector<int> p(n - 1);
+            auto a = perm(n);
+            // a.begin(), node 1, is the root
+            random_shuffle(a.begin() + 1, a.end());
+            for (int i = 1; i < n; i++)
+                p[i - 1] = a[rand_int(0, i - 1)] + 1;
+            return p;
+        }
+
+        static vector<pair<int, int>> tree_edges(int n) {
+            auto a = perm(n);
+            vector<pair<int, int>> edges;
+            for (int i = 1; i < n; i++)
+                edges.push_back({a[i] + 1, a[rand_int(0, i - 1)] + 1});
+            return edges;
+        }
+
+
+        static vector<vector<int>> tree_adj(int n) {
+            vector<vector<int>> adj(n);
+            for (auto [u, v]: tree_edges(n)) {
+                u--, v--;
+                adj[u].push_back(v);
+                adj[v].push_back(u);
+            }
+            return adj;
+        }
+
+        static string str(int n) {
+            string s;
+            for (int i = 0; i < n; i++)
+                s += rand_int('a', 'z');
+            return s;
+        }
+    };
+
+snippet sum
+    auto sum = [](int n) {
+        return (n * (n + 1)) / 2;
+    };
+
+snippet inverse_sum
+    auto inverse_sum = [](int S) {
+        return ceil((-1 + sqrt(1 + 8 * S)) / 2);
+    };
+
+# stress bash
+snippet stress
+    g++ -o A A.cpp
+    g++ -o B B.cpp
+    g++ -o gen gen.cpp
+    for ((i = 1; ; ++i)); do  # if they are same then will loop forever
+        echo $i
+        ./gen $i > int
+        ./A < int > out1
+        ./B < int > out2
+        #diff -w out1 out2 || break
+         diff -w <(./A < int) <(./B < int) || break
+    done
+
+# STL policy container (oset, omap)
+snippet code_ordered_set
+    #include<ext/pb_ds/assoc_container.hpp>
+    #include<ext/pb_ds/tree_policy.hpp>
+    using namespace __gnu_pbds;
+    template<typename T>
+    using ordered_set = tree<T, null_type, std::less<T>, rb_tree_tag, tree_order_statistics_node_update>;
+    
+# Dijkstra's algorithm
+snippet code_dijkstra
+    long long dijkstra(int s, int e, vector<vector<pair<int, int>>> &adj) {
+        int n = adj.size();
+        vector<int> prev(n + 1);
+        vector<ll> dist(n + 1, 1e18);
+
+        typedef pair<ll, int> item;
+        priority_queue<item, deque<item>, greater<item>> qu;
+        qu.push({0, s});
+        dist[s] = 0;
+
+        while (!qu.empty()) {
+            auto [d, i] = qu.top();
+            qu.pop();
+
+            if (dist[i] < d) continue;
+            for (auto [j, D]: adj[i]) {
+                if (dist[j] > D + d) {
+                    prev[j] = i;
+                    dist[j] = D + d;
+                    qu.push({dist[j], j});
+                }
+            }
+        }
+
+        // for (int i = e; i != s; i = prev[i]);
+        return dist[e];
+    }
+
+snippet code_segtree_simple
+    // source: https://codeforces.com/blog/entry/18051
+    struct Segtree {
+        constexpr static ll DEFAULT = 1e18;
+        int n = 0;
+        vector<ll> tree;
+
+        Segtree() = default;
+        Segtree(int n) : n(n) { tree.assign(n * 2, DEFAULT); }
+
+        inline ll merge(const ll &a, const ll &b) { return min(a, b); }
+
+        void pull(int i) { tree[i] = merge(tree[i << 1], tree[i << 1 | 1]); }
+
+        void build() {
+            for (int i = n - 1; i > 0; i--) pull(i);
+        }
+
+        void update(int i, ll val) {
+            for (tree[i += n] = val; i > 1; i >>= 1) pull(i >> 1);
+        }
+
+        auto query(int l, int r) {
+            ll resl = DEFAULT, resr = resl;
+            for (l += n, r += n + 1; l < r; l >>= 1, r >>= 1) {
+                if (l & 1) resl = merge(resl, tree[l++]);
+                if (r & 1) resr = merge(tree[--r], resr);
+            }
+            return merge(resl, resr);
+        }
+    };
+
+snippet code_segtree
+    struct Value;
+    struct Update;
+    struct Node;
+
+    // Replaceable by primitives (using Value = long long)
+    struct Value {
+        long long sum = 0, mn = 1e18, mx = -1e18;
+        Value() = default;
+        Value(ll value) { sum = mn = mx = value; }
+
+        Value &operator+=(const Value &other) {
+            sum += other.sum;
+            mn = min(mn, other.mn);
+            mx = max(mx, other.mx);
+            return *this;
+        }
+
+        Value operator+(const Value &other) const {
+            return Value(*this) += other;
+        }
+    };
+
+    struct Update {
+        // NOTE: Sometime you need to split the update, in these cases
+        // you should include the range [a, b] of the update in the struct Update
+        int value;
+        enum State {
+            idle,
+            relative,
+            forced
+        } state = idle;
+
+        Update() = default;
+        Update(int value, State state = forced) : value(value), state(state){};
+
+        Update &operator+=(const Update &other) {
+            if (state == idle || other.state == forced) {
+                *this = other;
+            } else {
+                assert(other.state == relative);
+                value += other.value; // NOTE: merge updates
+            }
+            return *this;
+        }
+
+        void apply_on(Value &other, int cnt) const {
+            if (state == forced) other = value;
+            // else other += value;
+            // other.sum += value * (cnt - 1);
+        }
+
+        Update get(const Node &node) const { return *this; }
+    };
+
+    struct Node {
+        int l = -1, r = -1; // [l, r]
+        Update up;
+        Value value;
+
+        Node() = default;
+        Node(int l, int r, const Value &value) : l(l), r(r), value(value){};
+
+        void update(const Update &up) { this->up += up; }
+
+        void apply_update() {
+            up.apply_on(value, r - l + 1);
+            up.state = Update::idle;
+        }
+    };
+
+    struct Segtree {
+        int n;
+        vector<Node> tree;
+
+        Segtree(int n) {
+            if ((n & (n - 1)) != 0)
+                n = 1 << (32 - __builtin_clz(n));
+            this->n = n;
+            tree.assign(n << 1, Node());
+            for (int i = n; i < n << 1; i++)
+                tree[i].l = tree[i].r = i - n;
+            for (int i = n - 1; i > 0; i--)
+                tree[i].l = tree[i << 1].l, tree[i].r = tree[i << 1 | 1].r;
+        }
+
+        Segtree(const vector<Value> &values) : Segtree(values.size()) {
+            for (int i = 0; i < (int) values.size(); i++)
+                tree[i + n].value = values[i];
+            build();
+        }
+
+        void build() {
+            for (int i = n - 1; i > 0; --i) pull(i);
+        }
+
+        inline Value query(int i, int j) { return query(1, i, j); }
+        inline void update(int i, int j, const Update &val) { update(1, i, j, val); }
+
+        void pull(int i) {
+            tree[i].value = tree[i << 1].value + tree[i << 1 | 1].value;
+        }
+
+        void push(int i) {
+            if (tree[i].up.state != Update::idle) {
+                if (i < n) {
+                    int l = i << 1, r = i << 1 | 1;
+                    tree[l].update(tree[i].up.get(tree[l]));
+                    tree[r].update(tree[i].up.get(tree[r]));
+                }
+                tree[i].apply_update();
+            }
+        }
+
+        Value query(int i, int l, int r) {
+            push(i);
+            if (tree[i].r < l || r < tree[i].l) return Value(); // default
+            if (l <= tree[i].l && tree[i].r <= r) return tree[i].value;
+            return query(i << 1, l, r) + query(i << 1 | 1, l, r);
+        }
+
+        void update(int i, int l, int r, const Update &up) {
+            push(i);
+            if (tree[i].r < l || r < tree[i].l) return;
+            if (l <= tree[i].l && tree[i].r <= r) {
+                tree[i].update(up);
+                push(i); // to apply the update
+                return;
+            }
+            update(i << 1, l, r, up.get(tree[i << 1]));
+            update(i << 1 | 1, l, r, up.get(tree[i << 1 | 1]));
+            pull(i);
+        }
+    };
+
+snippet code_pascal
+    vector<vector<Z>> pascal;
+    void build_pascal(int d) {
+        pascal = {{1}};
+        while (d--) {
+            vector<Z> &lastrow = pascal.back();
+            int s = lastrow.size();
+            vector<Z> newrow(s + 1);
+            newrow.front() = 1;
+            newrow.back() = 1;
+            for (int i = 1; i < s; i++)
+                newrow[i] = lastrow[i] + lastrow[i - 1];
+            pascal.push_back(newrow);
+        }
+    }
+
+# trie data structure
+snippet code_trie
+    struct Trie {
+        vector<vector<int>> child;
+        vector<int> count;
+
+        Trie() {
+            add_node();
+        }
+
+        int add_node() {
+            count.push_back(0);
+            child.push_back(vector<int>(26));
+            return count.size() - 1;
+        }
+
+        void insert(const string &s) {
+            int cur = 0; // root
+            for (auto c: s) {
+                if (child[cur][c - 'a'] == 0)
+                    child[cur][c - 'a'] = add_node();
+                cur = child[cur][c - 'a'];
+                count[cur]++;
+            }
+        }
+    };
+
+# string hashing implementation (polynomial hashing)
+snippet code_hash
+    constexpr int H = 2;
+    typedef array<long long, H> val;
+    vector<val> B;
+    const val M = {
+            1000000007,
+            1444444447,
+            // 998244353,
+            // 1000000009,
+    };
+
+    val tmp;
+
+    val operator*(const val &a, const val &b) {
+        for (int i = 0; i < H; i++) tmp[i] = a[i] * b[i] % M[i];
+        return tmp;
+    }
+
+    val operator-(const val &a, const val &b) {
+        for (int i = 0; i < H; i++) tmp[i] = (a[i] - b[i] + M[i]) % M[i];
+        return tmp;
+    }
+
+    val operator+(const val &a, const val &b) {
+        for (int i = 0; i < H; i++) tmp[i] = (a[i] + b[i]) % M[i];
+        return tmp;
+    }
+
+    val getval(int x) {
+        for (int i = 0; i < H; i++) tmp[i] = x % M[i];
+        return tmp;
+    }
+
+    void setB(int n) {
+        if (B.size() == 0) {
+            mt19937 rng(random_device{}());
+            B.assign(2, getval(1));
+            for (int i = 0; i < H; i++)
+                B.back()[i] = uniform_int_distribution<ll>(1, M[i] - 1)(rng);
+        }
+        while ((int) B.size() <= n) B.push_back(B.back() * B[1]);
+    }
+
+    struct Hash {
+        vector<val> h;
+
+        Hash(const string &s) : Hash(vector<int>(s.begin(), s.end())) {}
+
+        Hash(const vector<int> &s) {
+            vector<val> v;
+            for (auto x: s) v.push_back(getval(x));
+            *this = Hash(v);
+        }
+
+        Hash(const vector<val> &s) : h(s.size() + 1) {
+            setB(s.size());
+            for (int i = 0; i < (int) s.size(); i++)
+                h[i + 1] = h[i] * B[1] + s[i];
+        }
+
+        val get(int l, int r) { return h[r + 1] - h[l] * B[r - l + 1]; }
+    };
+# MO's algorithm
+snippet code_mo
+    int block_size;
+    struct MO {
+        struct Query {
+            int l, r, idx;
+            bool operator<(const Query &q) const {
+                if (l / block_size != q.l / block_size)
+                    return pair(l, r) < pair(q.l, q.r);
+                return (l / block_size & 1) ? (r < q.r) : (r > q.r);
+            }
+        };
+
+        vector<int> arr;
+        vector<Query> queries;
+        int l = 0, r = -1;
+
+        MO() {}
+        MO(const vector<int> &arr) : arr(arr) {}
+
+        void add_query(const Query &q) {
+            queries.push_back(q);
+        }
+
+        vector<int> get_ans() {
+            block_size = arr.size() / sqrt(queries.size()) + 1;
+            vector<int> ans(queries.size());
+            sort(all(queries));
+
+            l = queries.front().l, r = queries.front().l - 1;
+            for (auto &q: queries) {
+                set_range(q);
+                ans[q.idx] = ans_query(q);
+            }
+
+            return ans;
+        }
+
+        void set_range(Query &q) {
+            // [l, r] inclusive
+            while (l > q.l) add(arr[--l]);
+            while (r < q.r) add(arr[++r]);
+            while (l < q.l) remove(arr[l++]);
+            while (r > q.r) remove(arr[r--]);
+        }
+
+        void add(int x) {
+        }
+
+        void remove(int x) {
+        }
+
+        int ans_query(Query &q) {
+        }
+    };
+
+# KMP string algorithm
+snippet code_kmp
+    vector<int> KMP(const string &a, const string &b) {
+        // search for b in a
+        vector<int> ans;
+        int n = a.length(), m = b.length();
+        int b_table[n];
+        b_table[0] = 0;
+
+        for (int i = 1, k = 0; i < m; i++) {
+            while (k > 0 && b[k] != b[i])
+                k = b_table[k - 1];
+            k += b[i] == b[k];
+            b_table[i] = k;
+        }
+
+        for (int i = 0, k = 0; i < n; i++) {
+            while (k > 0 && b[k] != a[i])
+                k = b_table[k - 1];
+            k += b[k] == a[i];
+            if (k == m) {
+                k = b_table[k - 1];
+                ans.push_back(i - m + 1);
+            }
+        }
+
+        return ans;
+    }
+# generator utils for the stress tester
+snippet code_stress_gen
+    struct Gen {
+        static vector<int> perm(int n) {
+            vector<int> a(n);
+            for (int i = 0; i < n; i++)
+                a[i] = i;
+            shuffle(a.begin(), a.end());
+            return a;
+        }
+
+        static vector<int> tree_parents(int n) {
+            vector<int> p(n - 1);
+            auto a = perm(n);
+            // a[0] = 1, is the root
+            shuffle(a.begin() + 1, a.end());
+            for (int32_t i = 1; i < n; i++)
+                p[i - 1] = a[rnd.next(0, i - 1)] + 1;
+            return p;
+        }
+
+        static vector<pair<int, int>> tree_edges(int n) {
+            auto a = perm(n);
+            vector<pair<int, int>> edges;
+            for (int32_t i = 1; i < n; i++)
+                edges.push_back({a[i] + 1, a[rnd.next(0, i - 1)] + 1});
+            return edges;
+        }
+
+        static vector<vector<int>> tree_adj(int n) {
+            vector<vector<int>> adj(n);
+            for (auto [u, v]: tree_edges(n)) {
+                u--, v--;
+                adj[u].push_back(v);
+                adj[v].push_back(u);
+            }
+            return adj;
+        }
+
+        static string str(int n) {
+            string s;
+            for (int i = 0; i < n; i++)
+                s += rnd.next('a', 'z');
+            return s;
+        }
+    };
